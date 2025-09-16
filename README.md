@@ -1,5 +1,7 @@
 # AI SDK v5 Crash Course
 
+<img src="https://res.cloudinary.com/total-typescript/image/upload/v1758027897/ai-sdk-v5-crash-course-github-thumbnail_2x.jpg" alt="AI SDK 5 Crash Course" />
+
 🚀 **Master AI SDK v5 with AI Hero's comprehensive crash course.** This repository contains all the code examples and exercises from our hands-on, practical course focused on AI SDK v5 - the incredible TypeScript library that's becoming the standard for AI app development.
 
 Learn to build production-ready AI applications using AI SDK v5's powerful features and modern development patterns. Available on [aihero.dev](https://aihero.dev).
