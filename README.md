@@ -35,8 +35,8 @@ This crash course will take you from AI SDK v5 basics to advanced production pat
 1. **Clone this repository:**
 
 ```bash
-git clone https://github.com/ai-hero-dev/ai-engineering-crash-course.git
-cd ai-engineering-crash-course
+git clone https://github.com/ai-hero-dev/ai-sdk-v5-crash-course.git
+cd ai-sdk-v5-crash-course
 ```
 
 2. **Install dependencies:**
