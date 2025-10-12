@@ -1,6 +1,6 @@
-import { runVitest } from 'evalite/runner';
+import { runEvalite } from 'evalite/runner';
 
-await runVitest({
+await runEvalite({
   cwd: import.meta.dirname,
   mode: 'watch-for-file-changes',
   path: undefined,
