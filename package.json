@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@types/papaparse": "^5.3.16",
-    "ai-hero-cli": "^0.0.25",
+    "ai-hero-cli": "^0.0.26",
     "husky": "^9.1.7",
     "prettier": "^3.6.2",
     "tsx": "^4.20.3"
