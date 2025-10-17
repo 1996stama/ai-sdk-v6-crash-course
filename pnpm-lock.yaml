@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@ai-sdk/anthropic':
-        specifier: ^2.0.31
-        version: 2.0.31(zod@4.0.8)
+        specifier: ^2.0.32
+        version: 2.0.32(zod@4.0.8)
       '@ai-sdk/google':
         specifier: 2.0.23
         version: 2.0.23(zod@4.0.8)
@@ -18,8 +18,8 @@ importers:
         specifier: ^2.0.52
         version: 2.0.52(zod@4.0.8)
       '@ai-sdk/react':
-        specifier: 2.0.73
-        version: 2.0.73(react@19.1.0)(zod@4.0.8)
+        specifier: 2.0.76
+        version: 2.0.76(react@19.1.0)(zod@4.0.8)
       '@hono/node-server':
         specifier: ^1.15.0
         version: 1.15.0(hono@4.8.4)
@@ -57,8 +57,8 @@ importers:
         specifier: ^19.1.6
         version: 19.1.6(@types/react@19.1.8)
       ai:
-        specifier: 5.0.73
-        version: 5.0.73(zod@4.0.8)
+        specifier: 5.0.76
+        version: 5.0.76(zod@4.0.8)
       drizzle-orm:
         specifier: ^0.44.4
         version: 0.44.4(@cloudflare/workers-types@4.20250726.0)(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(better-sqlite3@11.10.0)(pg@8.11.3)(sqlite3@5.1.7)
@@ -76,7 +76,7 @@ importers:
         version: 3.38.4
       langfuse-vercel:
         specifier: ^3.38.4
-        version: 3.38.4(ai@5.0.73(zod@4.0.8))
+        version: 3.38.4(ai@5.0.76(zod@4.0.8))
       lucide-react:
         specifier: ^0.525.0
         version: 0.525.0(react@19.1.0)
@@ -124,8 +124,8 @@ importers:
         specifier: ^5.3.16
         version: 5.3.16
       ai-hero-cli:
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.1.1
+        version: 0.1.1
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -138,14 +138,14 @@ importers:
 
 packages:
 
-  '@ai-sdk/anthropic@2.0.31':
-    resolution: {integrity: sha512-k/5JX5ktl8cDURYowwtahuRlKJ/Z+hsAeZmKFoxyb/SRLthdbW01Pqs6eIgPB8PH/c1B6uhFcW1jvld6zCzj8g==}
+  '@ai-sdk/anthropic@2.0.32':
+    resolution: {integrity: sha512-zFzDT54axu3l7Z24wC6skBjANgJ9hKe5D1gnJvjNBvFeF7fE/D/UpigcmEwAb77mJuhOGye2G7bvCerlP8xeWQ==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/gateway@1.0.40':
-    resolution: {integrity: sha512-zlixM9jac0w0jjYl5gwNq+w9nydvraAmLaZQbbh+QpHU+OPkTIZmyBcKeTq5eGQKQxhi+oquHxzCSKyJx3egGw==}
+  '@ai-sdk/gateway@2.0.0':
+    resolution: {integrity: sha512-Gj0PuawK7NkZuyYgO/h5kDK/l6hFOjhLdTq3/Lli1FTl47iGmwhH1IZQpAL3Z09BeFYWakcwUmn02ovIm2wy9g==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -172,8 +172,8 @@ packages:
     resolution: {integrity: sha512-6o7Y2SeO9vFKB8lArHXehNuusnpddKPk7xqL7T2/b+OvXMRIXUO1rR4wcv1hAFUAT9avGZshty3Wlua/XA7TvA==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/react@2.0.73':
-    resolution: {integrity: sha512-FeVBrGDsxIewL08J62x8NIWaFtgasI/P4N2vu4tYVNTs9BTaMmpVE1dGwt05DkXu3h9s/v4TzMTs4M982vO/7Q==}
+  '@ai-sdk/react@2.0.76':
+    resolution: {integrity: sha512-ggAPzyaKJTqUWigpxMzI5DuC0Y3iEpDUPCgz6/6CpnKZY/iok+x5xiZhDemeaP0ILw5IQekV0kdgBR8JPgI8zQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19 || ^19.0.0-rc
@@ -1263,8 +1263,8 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
-  '@vercel/oidc@3.0.2':
-    resolution: {integrity: sha512-JekxQ0RApo4gS4un/iMGsIL1/k4KUBe3HmnGcDvzHuFBdQdudEJgTqcsJC7y6Ul4Yw5CeykgvQbX2XeEJd0+DA==}
+  '@vercel/oidc@3.0.3':
+    resolution: {integrity: sha512-yNEQvPcVrK9sIe637+I0jD6leluPxzwJKx/Haw6F4H77CdDsszUn5V3o96LPziXkSNE2B83+Z3mjqGKBK/R6Gg==}
     engines: {node: '>= 20'}
 
   '@vitest/expect@3.2.4':
@@ -1328,12 +1328,12 @@ packages:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
 
-  ai-hero-cli@0.1.0:
-    resolution: {integrity: sha512-XzlRnYgR35239fm0moOo6oOEZfTV3JuCVnfVf+WCqHxEK46V/mRMy/5K3/LF8iWYTcMqs4arMMkKv/4hRA/4RQ==}
+  ai-hero-cli@0.1.1:
+    resolution: {integrity: sha512-PQnd05CyxFY1sPOsMen4CiRULTuHUW0eeSbcgrvtAy2MmvfNUNw/LpSlr+EZqEWvxCQTXB29Vez9tdfkmAF24A==}
     hasBin: true
 
-  ai@5.0.73:
-    resolution: {integrity: sha512-+GOXWIxu0MYX33lA8KmGvnM3JvkMNY68C9qo2L1gLb1l4UTJkij+2ouncaC61em/8s/ORj6YzX2th9BZwccqpw==}
+  ai@5.0.76:
+    resolution: {integrity: sha512-ZCxi1vrpyCUnDbtYrO/W8GLvyacV9689f00yshTIQ3mFFphbD7eIv40a2AOZBv3GGRA7SSRYIDnr56wcS/gyQg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -3159,17 +3159,17 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/anthropic@2.0.31(zod@4.0.8)':
+  '@ai-sdk/anthropic@2.0.32(zod@4.0.8)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.12(zod@4.0.8)
       zod: 4.0.8
 
-  '@ai-sdk/gateway@1.0.40(zod@4.0.8)':
+  '@ai-sdk/gateway@2.0.0(zod@4.0.8)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.12(zod@4.0.8)
-      '@vercel/oidc': 3.0.2
+      '@vercel/oidc': 3.0.3
       zod: 4.0.8
 
   '@ai-sdk/google@2.0.23(zod@4.0.8)':
@@ -3195,10 +3195,10 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@2.0.73(react@19.1.0)(zod@4.0.8)':
+  '@ai-sdk/react@2.0.76(react@19.1.0)(zod@4.0.8)':
     dependencies:
       '@ai-sdk/provider-utils': 3.0.12(zod@4.0.8)
-      ai: 5.0.73(zod@4.0.8)
+      ai: 5.0.76(zod@4.0.8)
       react: 19.1.0
       swr: 2.3.6(react@19.1.0)
       throttleit: 2.1.0
@@ -4401,7 +4401,7 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vercel/oidc@3.0.2': {}
+  '@vercel/oidc@3.0.3': {}
 
   '@vitest/expect@3.2.4':
     dependencies:
@@ -4476,11 +4476,11 @@ snapshots:
       indent-string: 4.0.0
     optional: true
 
-  ai-hero-cli@0.1.0: {}
+  ai-hero-cli@0.1.1: {}
 
-  ai@5.0.73(zod@4.0.8):
+  ai@5.0.76(zod@4.0.8):
     dependencies:
-      '@ai-sdk/gateway': 1.0.40(zod@4.0.8)
+      '@ai-sdk/gateway': 2.0.0(zod@4.0.8)
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.12(zod@4.0.8)
       '@opentelemetry/api': 1.9.0
@@ -5215,9 +5215,9 @@ snapshots:
     dependencies:
       mustache: 4.2.0
 
-  langfuse-vercel@3.38.4(ai@5.0.73(zod@4.0.8)):
+  langfuse-vercel@3.38.4(ai@5.0.76(zod@4.0.8)):
     dependencies:
-      ai: 5.0.73(zod@4.0.8)
+      ai: 5.0.76(zod@4.0.8)
       langfuse: 3.38.4
       langfuse-core: 3.38.4
 
