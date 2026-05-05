@@ -26,9 +26,9 @@ This crash course will take you from AI SDK v6 basics to advanced production pat
 - [Node.js](https://nodejs.org/en/download) (version 22 or higher)
 - [pnpm](https://pnpm.io/) (recommended) or npm/yarn/bun
 - API keys for your preferred AI providers:
-  - [OpenAI](https://platform.openai.com/api-keys) (GPT-4, GPT-3.5)
-  - [Anthropic](https://console.anthropic.com/) (Claude)
-  - [Google AI Studio](https://aistudio.google.com/apikey) (Gemini)
+    - [OpenAI](https://platform.openai.com/api-keys) (GPT-4, GPT-3.5)
+    - [Anthropic](https://console.anthropic.com/) (Claude)
+    - [Google AI Studio](https://aistudio.google.com/apikey) (Gemini)
 
 ### Setup
 
