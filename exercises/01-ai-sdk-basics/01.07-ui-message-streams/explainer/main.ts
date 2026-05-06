@@ -8,6 +8,7 @@ const stream = streamText({
   prompt: 'Give me a sonnet about a cat called Steven.',
 });
 
+// ちゃんとしたチャットUI”は toUIMessageStream() が必要
 for await (const chunk of stream.toUIMessageStream()) {
   console.log(chunk);
 }
