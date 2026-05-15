@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import type { UIMessage } from 'ai';
+import type { MyUIMessage } from '../api/chat.ts';
 
 export const Wrapper = (props: {
   children: React.ReactNode;
@@ -17,8 +18,7 @@ export const Message = ({
   parts,
 }: {
   role: string;
-  // TODO - replace the type of UIMessage with MyUIMessage
-  parts: UIMessage['parts'];
+  parts: MyUIMessage['parts'];
 }) => {
   const prefix = role === 'user' ? 'User: ' : 'AI: ';
 
@@ -37,11 +37,23 @@ export const Message = ({
       </div>
       {parts.map((part, index) => {
         if (part.type === 'tool-writeFile') {
-          // TODO - return a JSX element that shows the tool call
-          // for the tool-writeFile tool call
-          // Follow the pattern of the other tool calls below
-          // Notice how it gives you autocomplete on the tools!
-          return TODO;
+          return (
+            <div
+              key={index}
+              className="bg-blue-900/20 border border-blue-700 rounded p-3 text-sm"
+            >
+              <div className="font-semibold text-blue-300 mb-1">
+                📝 Wrote to file
+              </div>
+              <div className="text-blue-200">
+                Path: {part.input?.path || 'Unknown'}
+              </div>
+              <div className="text-blue-200">
+                Content length:{' '}
+                {part.input?.content?.length || 0} characters
+              </div>
+            </div>
+          );
         }
         if (part.type === 'tool-readFile') {
           return (

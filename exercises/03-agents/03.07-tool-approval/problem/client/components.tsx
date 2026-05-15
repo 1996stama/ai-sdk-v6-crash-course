@@ -15,12 +15,19 @@ export const Wrapper = (props: {
 export const Message = ({
   role,
   parts,
-}: // TODO: Add addToolApprovalResponse prop, a function which takes in:
-// - id: string
-// - approved: boolean
-{
+  // ■ addToolApprovalResponse (フロント側での再開サイン)
+  // 画面の【Send】や【Cancel】ボタンが押された時に、
+  // 「人間がチェックしてOK（またはダメ）って言ったよ！」という結論を
+  // AI SDKの管理システムに記録（追加）する役割
+  addToolApprovalResponse,
+}: {
   role: string;
   parts: MyUIMessage['parts'];
+  // 定型の書き方
+  addToolApprovalResponse: (response: {
+    id: string;
+    approved: boolean;
+  }) => void;
 }) => {
   const prefix = role === 'user' ? 'User: ' : 'AI: ';
 
@@ -40,10 +47,59 @@ export const Message = ({
       </div>
       {parts.map((part, index) => {
         if (part.type === 'tool-sendEmail') {
-          // TODO: Check if part.state === 'approval-requested'
-          // If so, render the email preview with approve/reject buttons
-          // Use addToolApprovalResponse({ id: part.approval.id, approved: true/false })
-
+          if (part.state === 'approval-requested') {
+            return (
+              <div
+                key={index}
+                className="bg-amber-900/20 border border-amber-700 rounded p-4"
+              >
+                <div className="font-semibold text-amber-300 mb-3">
+                  Review Email
+                </div>
+                <div className="text-amber-200 space-y-2 mb-4">
+                  <div>
+                    <span className="font-medium">To:</span>{' '}
+                    {part.input.to}
+                  </div>
+                  <div>
+                    <span className="font-medium">Subject:</span>{' '}
+                    {part.input.subject}
+                  </div>
+                  <div>
+                    <span className="font-medium">Body:</span>
+                    <div className="mt-1 p-2 bg-amber-950/50 rounded text-sm">
+                      {part.input.body}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() =>
+                      addToolApprovalResponse({
+                        id: part.approval.id,
+                        // コレが true になると useChat が自動で「承認したよ！」とサーバーに送信する
+                        approved: true,
+                      })
+                    }
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-white font-medium"
+                  >
+                    Send
+                  </button>
+                  <button
+                    onClick={() =>
+                      addToolApprovalResponse({
+                        id: part.approval.id,
+                        approved: false,
+                      })
+                    }
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-white font-medium"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            );
+          }
           if (part.state === 'output-available') {
             return (
               <div

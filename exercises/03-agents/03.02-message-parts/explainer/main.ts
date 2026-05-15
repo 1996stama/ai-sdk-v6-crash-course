@@ -122,6 +122,10 @@ const stream = result.toUIMessageStream({
   },
 });
 
+// onFinish の後の parts が重要
+// ストリーミング中は「今、何が起きているか」という断片(Delta)が重要だったが、
+// 会話が終わった後は、この「完成したオブジェクト」が重要になる(parts含む)
+
 console.log('--- STREAM ---');
 
 for await (const message of stream) {
