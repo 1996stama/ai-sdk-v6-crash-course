@@ -15,6 +15,7 @@ export const POST = async (req: Request): Promise<Response> => {
     await req.json();
   const { messages, id } = body;
 
+  let chat = await getChat(id);
   const mostRecentMessage = messages[messages.length - 1];
 
   if (!mostRecentMessage) {
@@ -27,25 +28,25 @@ export const POST = async (req: Request): Promise<Response> => {
     });
   }
 
-  const chat = TODO; // TODO: Get the existing chat
-
   if (!chat) {
-    // TODO: If the chat doesn't exist, create it with the id
+    const newChat = await createChat(id, messages);
+    chat = newChat;
   } else {
-    // TODO: Otherwise, append the most recent message to the chat
+    await appendToChatMessages(id, [mostRecentMessage]);
   }
 
-  // TODO: wait for the stream to finish and append the
-  // last message to the chat
   const result = streamText({
     model: google('gemini-2.5-flash'),
     messages: await convertToModelMessages(messages),
   });
 
-  return result.toUIMessageStreamResponse();
+  return result.toUIMessageStreamResponse({
+    onFinish: async ({ responseMessage }) => {
+      await appendToChatMessages(id, [responseMessage]);
+    },
+  });
 };
 
-// http://localhost:3000/api/chat?chatId=123
 export const GET = async (req: Request): Promise<Response> => {
   const url = new URL(req.url);
   const chatId = url.searchParams.get('chatId');

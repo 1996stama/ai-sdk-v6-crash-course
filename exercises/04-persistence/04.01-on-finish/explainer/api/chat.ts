@@ -12,6 +12,21 @@ export const POST = async (req: Request): Promise<Response> => {
   const result = streamText({
     model: google('gemini-2.5-flash'),
     messages: await convertToModelMessages(messages),
+    // response = LLMから返ってきたレスポンスは、
+    // AI専用の言葉で書かれていて、フロントエンドが理解できない
+    // [
+    //   {
+    //     "role": "assistant",
+    //     "content": [
+    //       {
+    //         "type": "tool-call",
+    //         "toolCallId": "call-123",
+    //         "toolName": "sendEmail",
+    //         "args": { "to": "bob@example.com" }
+    //       }
+    //     ]
+    //   }
+    // ]
     onFinish: ({ response }) => {
       // 'response.messages' is an array of ToolModelMessage and AssistantModelMessage,
       // which are the model messages that were generated during the stream.
@@ -22,18 +37,22 @@ export const POST = async (req: Request): Promise<Response> => {
     },
   });
 
+  // ■ toUIMessageStreamResponse()
+  // 「AI語」から「人間（UI）語」への自動逆変換
+  // 「過去の履歴（originalMessages）」との合体
   return result.toUIMessageStreamResponse({
     originalMessages: messages,
     onFinish: ({ messages, responseMessage }) => {
       // 'messages' is the full message history, including the original messages
       // you pass in to originalMessages.
       console.log('toUIMessageStreamResponse.onFinish');
-      console.log('  messages');
+      console.log('messages');
       console.dir(messages, { depth: null });
 
-      // 'responseMessage' is the last message in the message history.
+      // ■ responseMessage
+      // 今回、AIが新しく喋った（または新しくツールを呼び出した）最新の1メッセージ
       console.log('toUIMessageStreamResponse.onFinish');
-      console.log('  responseMessage');
+      console.log('responseMessage');
       console.dir(responseMessage, { depth: null });
     },
   });

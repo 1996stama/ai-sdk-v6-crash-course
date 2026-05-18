@@ -68,7 +68,6 @@ const App = () => {
 
             setSearchParams({ chatId: backupChatId });
 
-            // Refresh the backup chat id
             setBackupChatId(crypto.randomUUID());
           });
         }}

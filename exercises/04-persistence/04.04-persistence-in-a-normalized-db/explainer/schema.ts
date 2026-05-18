@@ -8,6 +8,9 @@ import {
   text,
   timestamp,
   varchar,
+  // ■ Drizzle ORM
+  // TypeScriptとDB（Postgresなど）の間を、安全かつ快適に繋いでくれる架け橋ツール
+  // TypeScriptがそのままデータベースの設計図（スキーマ）になる
 } from 'drizzle-orm/pg-core';
 import { generateId, type ToolUIPart } from 'ai';
 import { relations, sql } from 'drizzle-orm';
@@ -24,26 +27,59 @@ import type {
   getWeatherInformationOutput,
 } from './tools.ts';
 
+// exportすることで、他のファイルでカラムの追加など、操作を行えるようにする
 export const chats = pgTable('chats', {
   id: varchar()
     .primaryKey()
     .$defaultFn(() => generateId()),
 });
 
+// 下記のように、TypeScriptで設計図（schema.ts）を書いておくと、
+// Drizzleが自動的に以下の2つを同時にやってくれる
+// 1. 本物のDBに、この通りのテーブルを自動で作ってくれる（マイグレーション機能）
+// 2. コードを書くときに、強力な自動補完（タイポ防止）を効かせてくれる
 export const messages = pgTable(
   'messages',
   {
     id: varchar()
       .primaryKey()
+      // $defaultFn() = IDを自動で発行する関数
+      // generateId() = 重複しないランダムな文字列（ID）を作る関数
       .$defaultFn(() => generateId()),
-    chatId: varchar()
+    chatId: varchar() // 👈 この列を対象に...
+      // 親子関係の宣言：
+      // この chatId には、chats テーブルの id に実在する番号しか入れません
+      // 親を chats の id とする、chatId という子 という外部キー制約をDBに設定している
       .references(() => chats.id, { onDelete: 'cascade' })
       .notNull(),
     createdAt: timestamp().defaultNow().notNull(),
+    // varchar = 文字列型
+    // ■ .$type<MyUIMessage['role']>
+    // TypeScriptの型（MyUIMessage['role']）をDBの列にバインドしている
+    // 「ここには 'user' か 'assistant' という特定の文字列しか絶対に受け入れません
+    // タイポも許しません という型を使用し、厳重にロックをかけている
+    // ■ <MyUIMessage['role']>
+    // MyUIMessage というオブジェクトの型定義の中にある、
+    // role という項目の型（中身）をそのまま持ってきて！ という意味
+    // interface MyUIMessage {
+    //   id: string;
+    //   role: 'user' | 'assistant' | 'system'; // 👈 コレ！
+    //   parts: any[];
+    // }
     role: varchar().$type<MyUIMessage['role']>().notNull(),
   },
+  // DBの検索スピードを爆速にするための 「インデックス（索引・目次）」 を作成する設定
   (table) => [
-    index('messages_chat_id_idx').on(table.chatId),
+    // 'messages_chat_id_idx' = この目次（インデックス）自体につける、DB上の名前
+    // 名前の付け方の慣習： [テーブル名]_[カラム名]_idx とつけるのが、お作法
+    // .on(table.chatId) = どのカラム（列）を対象にして目次を作りますか？ という指定
+    // ■ index の機能
+    // chatId だけが並んだ目次ページを作り、その中だけを探す = Index Scan
+    // messages_chat_id_idx = chatId だけが並んだ 専用の indexテーブル
+    // 通常は、各レコードを一行ずつ、全カラムを一つずつ検証していくが、
+    // indexテーブルがあることで、該当のカラムだけを探せる = 爆速！
+    // 該当のカラムが見つかった後、メインテーブルから目的のカラムを抽出する = Table Access
+    index('messages_chat_id_idx').on(table.chatId), // 👈 「目次を作れ！」という命令
     index('messages_chat_id_created_at_idx').on(
       table.chatId,
       table.createdAt,
