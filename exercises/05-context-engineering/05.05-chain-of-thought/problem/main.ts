@@ -13,8 +13,6 @@ const IIMT_ARTICLE = readFileSync(
   'utf-8',
 );
 
-// TODO: Add some instructions telling the model to think about its answer first before it responds. Consider the optimal path for the user to understand the code, including each individual piece of syntax.
-// TODO: Add an output format telling the model to return two sections - a <thinking> block and an answer. The answer should NOT be wrapped in an <answer> tag.
 const result = streamText({
   model: google('gemini-2.5-flash-lite'),
   prompt: `
@@ -42,6 +40,18 @@ const result = streamText({
     <the-ask>
     Explain the code, using the article as a reference.
     </the-ask>
+
+    <thinking-instructions>
+    Think about your answer first before you respond. Consider the optimal path for the user to understand the code. Consider all of the knowledge dependencies - the pieces of knowledge that rely on other pieces of knowledge. Assume the user knows very little about TypeScript. Create a list of the pieces of knowledge that the user needs to know, in order of dependency.
+    </thinking-instructions>
+
+    <output-format>
+    Return two sections - a <thinking> block and an answer.
+    - The <thinking> block should contain your thought process, and be wrapped in a <thinking> tag.
+    - The answer should be unwrapped.
+    - The answer should be in markdown format, using code blocks for the TypeScript code.
+    </output-format>
+
   `,
 });
 

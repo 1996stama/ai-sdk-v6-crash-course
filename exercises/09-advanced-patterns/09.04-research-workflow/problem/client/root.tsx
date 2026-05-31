@@ -12,6 +12,8 @@ const App = () => {
     `Which are better? Gas, electric, or induction hobs? Please provide a detailed answer.`,
   );
 
+  console.log(messages);
+
   return (
     <Wrapper>
       {messages.map((message) => (

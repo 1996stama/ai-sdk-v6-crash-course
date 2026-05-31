@@ -38,8 +38,7 @@ export const Message = ({
 }: {
   role: string;
   parts: MyUIMessage['parts'];
-  // TODO: Add a type for the metadata here
-  metadata: TODO;
+  metadata: MyUIMessage['metadata'];
 }) => {
   const prefix = role === 'user' ? 'User: ' : 'AI: ';
 

@@ -5,9 +5,9 @@ import {
   type UIMessage,
 } from 'ai';
 
-// TODO: Add the type of the metadata to the object here
-// We probably want it to be { duration: number }
-export type MyUIMessage = UIMessage<TODO>;
+export type MyUIMessage = UIMessage<{
+  duration: number;
+}>;
 
 export const POST = async (req: Request): Promise<Response> => {
   const body: { messages: MyUIMessage[] } = await req.json();
@@ -18,13 +18,50 @@ export const POST = async (req: Request): Promise<Response> => {
     messages: await convertToModelMessages(messages),
   });
 
-  // TODO: Calculate the start time of the stream
-  const startTime = TODO;
+  const startTime = Date.now();
 
+  // ■ messageMetadata = AIのメッセージに、追加情報をくっつけるための仕組み
+  // AI の message は基本：
+  // {
+  //  role: 'assistant',
+  //  parts: [
+  //   {
+  //    type: 'text',
+  //    text: 'こんにちは'
+  //   }
+  //  ]
+  // }
+  // ★ でも実際は「追加情報」も欲しい...
+  // 例えば：
+  // この返答に何秒かかった？
+  // どのモデル？
+  // token数？ など
+  // ★ でも parts に混ぜたくない...
+  // AI の本文に入れると：
+  // コピペ時に邪魔
+  // LLM会話履歴に混ざる
+  // UI制御しにくい
+  // ★ だから metadata という別領域がある
+  // {
+  //  role: 'assistant',
+  //  parts: [
+  //    ...
+  //  ],
+  //  metadata: {
+  //    duration: 2310
+  //  }
+  // }
   return result.toUIMessageStreamResponse<MyUIMessage>({
-    // TODO: Add the messageMetadata function here
-    // If it encounters a 'finish' part, it should return the duration
-    // of the stream in milliseconds
-    messageMetadata: TODO,
+    messageMetadata({ part }) {
+      // message生成が終わったら...
+      if (part.type === 'finish') {
+        return {
+          // duration を metadata に入れてください
+          duration: Date.now() - startTime,
+        };
+      }
+
+      return undefined;
+    },
   });
 };

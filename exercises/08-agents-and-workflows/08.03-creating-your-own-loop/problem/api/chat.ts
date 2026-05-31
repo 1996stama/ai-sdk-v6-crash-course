@@ -37,10 +37,6 @@ const EVALUATE_SLACK_MESSAGE_SYSTEM = `You are evaluating the Slack message prod
   - The Slack message should be written in a way that is easy to understand.
   - It should be appropriate for a professional Slack conversation.
 `;
-const WRITE_SLACK_MESSAGE_FINAL_SYSTEM = `You are writing a Slack message based on the conversation history, a first draft, and some feedback given about that draft.
-
-  Return only the final Slack message, no other text.
-`;
 
 export const POST = async (req: Request): Promise<Response> => {
   const body: { messages: MyMessage[] } = await req.json();
@@ -52,91 +48,100 @@ export const POST = async (req: Request): Promise<Response> => {
         type: 'start',
       });
 
-      let step = TODO; // TODO: keep track of the step we're on
-      let mostRecentDraft = TODO; // TODO: keep track of the most recent draft
-      let mostRecentFeedback = TODO; // TODO: keep track of the most recent feedback
+      let step = 0;
+      let mostRecentDraft = '';
+      let mostRecentFeedback = '';
 
-      // TODO: create a loop which:
-      // 1. Writes a Slack message
-      // 2. Evaluates the Slack message
-      // 3. Saves the feedback in the variables above
-      // 4. Increments the step variable
-
-      // TODO: once the loop is done, write the final Slack message
-      // by streaming one large 'text-delta' part (see the reference
-      // material for an example)
-
-      const writeSlackResult = streamText({
-        model: google('gemini-2.5-flash'),
-        system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
-        prompt: `
+      while (step < 2) {
+        // Write Slack message
+        const writeSlackResult = streamText({
+          model: google('gemini-2.5-flash'),
+          system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
+          prompt: `
           Conversation history:
           ${formatMessageHistory(messages)}
+
+          Previous draft (if any):
+          ${mostRecentDraft}
+
+          Previous feedback (if any):
+          ${mostRecentFeedback}
         `,
-      });
-
-      const firstDraftId = crypto.randomUUID();
-
-      let firstDraft = '';
-
-      for await (const part of writeSlackResult.textStream) {
-        firstDraft += part;
-
-        writer.write({
-          type: 'data-slack-message',
-          data: firstDraft,
-          id: firstDraftId,
         });
+
+        const draftId = crypto.randomUUID();
+
+        let draft = '';
+
+        for await (const part of writeSlackResult.textStream) {
+          draft += part;
+
+          writer.write({
+            type: 'data-slack-message',
+            data: draft,
+            id: draftId,
+          });
+        }
+
+        mostRecentDraft = draft;
+
+        // Evaluate Slack message
+        const evaluateSlackResult = streamText({
+          model: google('gemini-2.5-flash'),
+          system: EVALUATE_SLACK_MESSAGE_SYSTEM,
+          prompt: `
+            Conversation history:
+            ${formatMessageHistory(messages)}
+
+            Most recent draft:
+            ${mostRecentDraft}
+
+            Previous feedback (if any):
+            ${mostRecentFeedback}
+          `,
+        });
+
+        const feedbackId = crypto.randomUUID();
+
+        let feedback = '';
+
+        for await (const part of evaluateSlackResult.textStream) {
+          feedback += part;
+
+          writer.write({
+            type: 'data-slack-message-feedback',
+            data: feedback,
+            id: feedbackId,
+          });
+        }
+
+        mostRecentFeedback = feedback;
+
+        step++;
       }
 
-      // Evaluate Slack message
-      const evaluateSlackResult = streamText({
-        model: google('gemini-2.5-flash'),
-        system: EVALUATE_SLACK_MESSAGE_SYSTEM,
-        prompt: `
-          Conversation history:
-          ${formatMessageHistory(messages)}
+      const textPartId = crypto.randomUUID();
 
-          Slack message:
-          ${firstDraft}
-        `,
+      // ■ createUIMessageStream は「完全手動マニュアル」
+      // チャットの箱を作って(start)、
+      // 文字を入れて(delta)、
+      // 閉じる(end)」というお作法も、
+      // 「手動モードなんだから、それも自分でちゃんと書いてね！ということ
+      writer.write({
+        type: 'text-start',
+        id: textPartId,
       });
 
-      const feedbackId = crypto.randomUUID();
-
-      let feedback = '';
-
-      for await (const part of evaluateSlackResult.textStream) {
-        feedback += part;
-
-        writer.write({
-          type: 'data-slack-message-feedback',
-          data: feedback,
-          id: feedbackId,
-        });
-      }
-
-      // Write final Slack message
-      const finalSlackAttempt = streamText({
-        model: google('gemini-2.5-flash'),
-        system: WRITE_SLACK_MESSAGE_FINAL_SYSTEM,
-        prompt: `
-          Conversation history:
-          ${formatMessageHistory(messages)}
-
-          First draft:
-          ${firstDraft}
-
-          Previous feedback:
-          ${feedback}
-        `,
+      writer.write({
+        type: 'text-delta',
+        delta: mostRecentDraft,
+        id: textPartId,
       });
 
-      writer.merge(
-        finalSlackAttempt.toUIMessageStream({
-          sendStart: false,
-        }),
-      );
+      writer.write({
+        type: 'text-end',
+        id: textPartId,
+      });
     },
   });
 

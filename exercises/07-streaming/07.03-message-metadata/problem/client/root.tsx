@@ -19,8 +19,7 @@ const App = () => {
           key={message.id}
           role={message.role}
           parts={message.parts}
-          // TODO: Pass the metadata to the Message component
-          metadata={TODO}
+          metadata={message.metadata}
         />
       ))}
       <ChatInput

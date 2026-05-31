@@ -30,7 +30,7 @@ const result = await streamText({
         )
         .join('\n')}
     </examples>
-    
+
     <conversation-history>
     ${INPUT}
     </conversation-history>

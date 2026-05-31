@@ -33,11 +33,44 @@ export const POST = async (req: Request): Promise<Response> => {
   const body: { messages: UIMessage[] } = await req.json();
   const { messages } = body;
 
-  const writeSlackResult = TODO; // Write Slack message
+  // Write Slack message
+  const writeSlackResult = await generateText({
+    model: google('gemini-2.5-flash'),
+    system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
+    prompt: `
+      Conversation history:
+      ${formatMessageHistory(messages)}
+    `,
+  });
 
-  const evaluateSlackResult = TODO; // Evaluate Slack message
+  // Evaluate Slack message
+  const evaluateSlackResult = await generateText({
+    model: google('gemini-2.5-flash'),
+    system: EVALUATE_SLACK_MESSAGE_SYSTEM,
+    prompt: `
+      Conversation history:
+      ${formatMessageHistory(messages)}
 
-  const finalSlackAttempt = TODO; // Write final Slack message
+      Slack message:
+      ${writeSlackResult.text}
+    `,
+  });
+
+  // Write final Slack message
+  const finalSlackAttempt = streamText({
+    model: google('gemini-2.5-flash'),
+    system: WRITE_SLACK_MESSAGE_FINAL_SYSTEM,
+    prompt: `
+        Conversation history:
+        ${formatMessageHistory(messages)}
+
+        First draft:
+        ${writeSlackResult.text}
+
+        Previous feedback:
+        ${evaluateSlackResult.text}
+      `,
+  });
 
   return finalSlackAttempt.toUIMessageStreamResponse();
 };

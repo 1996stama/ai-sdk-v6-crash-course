@@ -1,3 +1,4 @@
+import { langfuse } from './langfuse.ts';
 import { google } from '@ai-sdk/google';
 import {
   convertToModelMessages,
@@ -7,7 +8,6 @@ import {
   type ModelMessage,
   type UIMessage,
 } from 'ai';
-import { langfuse } from './langfuse.ts';
 
 export const POST = async (req: Request): Promise<Response> => {
   const body = await req.json();
@@ -17,10 +17,15 @@ export const POST = async (req: Request): Promise<Response> => {
   const modelMessages: ModelMessage[] =
     await convertToModelMessages(messages);
 
-  // TODO: declare the trace variable using the langfuse.trace method,
-  // and pass it the following arguments:
-  // - sessionId: body.id
-  const trace = TODO;
+  const trace = langfuse.trace({
+    sessionId: body.id,
+  });
+
+  const generation = trace.generation({
+    name: 'chat-generation',
+    model: 'gemini-2.5-flash',
+    input: modelMessages,
+  });
 
   const mostRecentMessage = messages[messages.length - 1];
 
@@ -37,8 +42,8 @@ export const POST = async (req: Request): Promise<Response> => {
     })
     .join('');
 
-  const titleResult = generateText({
-    model: google('gemini-2.5-flash-lite'),
+  const titleResult = await generateText({
+    model: google('gemini-2.5-flash'),
     prompt: `
       You are a helpful assistant that can generate titles for conversations.
 
@@ -58,32 +63,44 @@ export const POST = async (req: Request): Promise<Response> => {
       Generate a title for the conversation.
       Return only the title.
     `,
-    // TODO: declare the experimental_telemetry property using the following object:
-    // - isEnabled: true
-    // - functionId: 'your-name-here'
-    // - metadata: { langfuseTraceId: trace.id }
-    experimental_telemetry: TODO,
+    experimental_telemetry: {
+      isEnabled: true,
+      functionId: 'title-generation',
+      metadata: {
+        langfuseTraceId: trace.id,
+      },
+    },
   });
+
+  let fullOutput = '';
 
   const streamTextResult = streamText({
     model: google('gemini-2.5-flash'),
     messages: modelMessages,
-    // TODO: declare the experimental_telemetry property using the following object:
-    // - isEnabled: true
-    // - functionId: 'your-name-here'
-    // - metadata: { langfuseTraceId: trace.id }
-    experimental_telemetry: TODO,
+    experimental_telemetry: {
+      isEnabled: true,
+      functionId: 'chat',
+      metadata: {
+        langfuseTraceId: trace.id,
+      },
+    },
   });
 
   const stream = streamTextResult.toUIMessageStream({
+    onChunk: ({ chunk }) => {
+      if (chunk.type === 'text-delta') {
+        fullOutput += chunk.textDelta;
+      }
+    },
+
     onFinish: async () => {
-      const title = await titleResult;
+      generation.end({
+        output: fullOutput,
+      });
 
-      console.log('title: ', title.text);
+      console.log('title: ', titleResult.text);
 
-      // TODO: flush the langfuse traces using the langfuse.flushAsync method
-      // and await the result
-      TODO;
+      await langfuse.flushAsync();
     },
   });
 

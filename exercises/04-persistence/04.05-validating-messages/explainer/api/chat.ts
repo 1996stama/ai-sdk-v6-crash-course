@@ -14,6 +14,12 @@ export const POST = async (req: Request): Promise<Response> => {
   let messages: UIMessage[];
 
   try {
+    // ■ validateUIMessages()
+    // 元から UIMessage 型のデータを返すことが100%決まっている
+    // データの方向： 📱 画面（ブラウザ） ➡️ 💻 サーバー
+    // 何をしているか：
+    // 画面（フロントエンド）から「これ、チャットのデータだよ」と言って送られてきた、
+    // 正体不明の怪しいデータを、この関数が 「本当に UIMessage の形を守っているか？」 という基準で1項目ずつ厳しくチェックしている
     messages = await validateUIMessages({
       messages: body.messages,
     });

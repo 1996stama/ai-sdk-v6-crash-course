@@ -3,8 +3,10 @@ import {
   createUIMessageStream,
   createUIMessageStreamResponse,
   streamText,
+  Output,
   type UIMessage,
 } from 'ai';
+import z from 'zod';
 
 export type MyMessage = UIMessage<
   unknown,
@@ -85,11 +87,23 @@ export const POST = async (req: Request): Promise<Response> => {
 
         mostRecentDraft = draft;
 
-        // TODO: change this to streamObject, and get it to return
-        // the feedback as a string, as well as whether we should
-        // break the loop early (that the message is good enough)
         const evaluateSlackResult = streamText({
           model: google('gemini-2.5-flash'),
+          output: Output.object({
+            schema: z.object({
+              feedback: z
+                .string()
+                .optional()
+                .describe(
+                  'The feedback about the most recent draft. Only return this if the draft is not good enough.',
+                ),
+              isGoodEnough: z
+                .boolean()
+                .describe(
+                  'Whether the most recent draft is good enough to stop the loop.',
+                ),
+            }),
+          }),
           system: EVALUATE_SLACK_MESSAGE_SYSTEM,
           prompt: `
             Conversation history:
@@ -105,25 +119,36 @@ export const POST = async (req: Request): Promise<Response> => {
 
         const feedbackId = crypto.randomUUID();
 
-        let feedback = '';
-
-        for await (const part of evaluateSlackResult.textStream) {
-          feedback += part;
-
-          writer.write({
-            type: 'data-slack-message-feedback',
-            data: feedback,
-            id: feedbackId,
-          });
+        for await (const part of evaluateSlackResult.partialOutputStream) {
+          if (part.feedback) {
+            writer.write({
+              type: 'data-slack-message-feedback',
+              data: part.feedback,
+              id: feedbackId,
+            });
+          }
         }
 
-        mostRecentFeedback = feedback;
+        const finalEvaluationObject =
+          await evaluateSlackResult.output;
+
+        // If the draft is good enough, break the loop
+        if (finalEvaluationObject.isGoodEnough) {
+          break;
+        }
+
+        if (!finalEvaluationObject.feedback) {
+          throw new Error('No feedback provided by the LLM.');
+        }
+
+        mostRecentFeedback = finalEvaluationObject.feedback;
 
         step++;
       }
 
       const textPartId = crypto.randomUUID();
 
+      // お作法 最後に下記3つの処理を行い、LLMとの会話を終わらせる
       writer.write({
         type: 'text-start',
         id: textPartId,

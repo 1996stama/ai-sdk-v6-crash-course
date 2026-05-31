@@ -59,7 +59,7 @@ const result = await streamText({
     - Use quotes from the content of the website to answer the question.
     - Use paragraphs in your output.
     </rules>
-    
+
     <conversation-history>
     ${input}
     </conversation-history>

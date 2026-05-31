@@ -10,8 +10,9 @@ const App = () => {
 
   const [input, setInput] = useState(``);
 
-  // TODO: Get the data-suggestion part from the last message
-  const latestSuggestion: string | undefined = TODO;
+  const latestSuggestion = messages[
+    messages.length - 1
+  ]?.parts.find((part) => part.type === 'data-suggestion')?.data;
 
   return (
     <Wrapper>
@@ -23,8 +24,6 @@ const App = () => {
         />
       ))}
       <ChatInput
-        // NOTE: We are passing the suggestion to the ChatInput component
-        // where we will display it as a button
         suggestion={
           messages.length === 0
             ? 'What is the capital of France?'
